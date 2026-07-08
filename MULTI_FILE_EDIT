@@ -1,0 +1,333 @@
+\`\`\`
+--- a/app/(site)/layout.tsx
++++ b/app/(site)/layout.tsx
+@@ -1,6 +1,6 @@
+ import type React from "react"
+ import type { Metadata } from "next"
+-import Header from "@/components/site/header"
++import Header from "@/components/site/header"
+ import Footer from "@/components/site/footer"
+ import CursorGlow from "@/components/site/cursor-glow"
+ 
+@@ -30,3 +30,4 @@
+     )
+   }
+   ---
+--- a/components/site/hero-section.tsx
++++ b/components/site/hero-section.tsx
+@@ -1,6 +1,6 @@
+ import Image from "next/image"
+ import Link from "next/link"
+-import { Button } from "@/components/ui/button"
++import { Button } from "@/components/ui/button"
+ import Reveal from "@/components/site/reveal"
+ 
+ type HeroProps = {
+@@ -90,3 +90,4 @@
+     )
+   }
+   ---
+--- a/app/(site)/page.tsx
++++ b/app/(site)/page.tsx
+@@ -1,5 +1,6 @@
+ import { siteConfig } from "@/config/site"
+ import { ServiceCard } from "@/components/site/service-card"
++import Reveal from "@/components/site/reveal"
+ import { services } from "@/config/site"
+ import { CheckCircle2 } from 'lucide-react'
+ import { testimonials } from "@/config/site"
+@@ -40,7 +41,9 @@
+           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+             {services.map((s) => (
+               // @ts-expect-error
+-              <ServiceCard key={s.title} {...s} />
++              <Reveal key={s.title} delay={0.02} y={16}>
++                <ServiceCard {...s} />
++              </Reveal>
+             ))}
+           </div>
+         </div>
+@@ -60,10 +63,12 @@
+         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+           {benefits.map((b) => (
+             // @ts-expect-error
+-            <li className="flex items-start gap-3 rounded-lg border bg-background p-4">
+-              <CheckCircle2 className="h-5 w-5 text-emerald-600 mt-1" />
+-              <span className="text-sm md:text-base">{b}</span>
+-            </li>
++            <Reveal key={b} y={14}>
++              <li className="flex items-start gap-3 rounded-lg border bg-background p-4 transition-all hover:-translate-y-0.5 hover:shadow-sm">
++                <CheckCircle2 className="h-5 w-5 text-emerald-600 mt-1" />
++                <span className="text-sm md:text-base">{b}</span>
++              </li>
++            </Reveal>
+           ))}
+         </ul>
+       </div>
+@@ -73,3 +78,4 @@
+     </section>
+   )
+ }
++
+--- a/app/(site)/about/page.tsx
++++ b/app/(site)/about/page.tsx
+@@ -1,5 +1,6 @@
+ import Image from "next/image"
+ import { team } from "@/config/site"
++import Reveal from "@/components/site/reveal"
+ 
+ export default function AboutPage() {
+   return (
+@@ -30,11 +31,13 @@
+           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+             {team.map((m) => (
+               // @ts-expect-error
+-              <div className="rounded-xl border bg-background p-6 text-center transition-all hover:-translate-y-0.5 hover:shadow-sm">
+-                <Image src={m.image || "/placeholder.svg"} alt={m.name} width={128} height={128} className="mx-auto rounded-full" />
+-                <h3 className="mt-4 font-medium">{m.name}</h3>
+-                <p className="text-sm text-muted-foreground">{m.title}</p>
+-              </div>
++              <Reveal key={m.name} y={16}>
++                <div className="rounded-xl border bg-background p-6 text-center transition-all hover:-translate-y-0.5 hover:shadow-sm">
++                  <Image src={m.image || "/placeholder.svg"} alt={m.name} width={128} height={128} className="mx-auto rounded-full" />
++                  <h3 className="mt-4 font-medium">{m.name}</h3>
++                  <p className="text-sm text-muted-foreground">{m.title}</p>
++                </div>
++              </Reveal>
+             ))}
+           </div>
+         </div>
+@@ -43,3 +46,4 @@
+     </section>
+   )
+ }
++
+--- a/app/(site)/services/page.tsx
++++ b/app/(site)/services/page.tsx
+@@ -1,5 +1,6 @@
+ import { services } from "@/config/site"
+ import { Icons } from "@/components/icons"
++import Reveal from "@/components/site/reveal"
+ 
+ export default function ServicesPage() {
+   return (
+@@ -20,11 +21,13 @@
+           <div className="grid gap-8">
+             {services.map((s) => (
+               // @ts-expect-error
+-              <section id={s.id} className="rounded-xl border bg-background p-6 transition-all hover:-translate-y-0.5 hover:shadow-md">
+-                <Icons.arrowRightCircle className="h-6 w-6 text-emerald-600" />
+-                <h3 className="mt-3 text-lg font-semibold">{s.title}</h3>
+-                <ul className="mt-2 ml-4 list-disc text-sm text-muted-foreground">{s.list.map((i) => <li key={i}>{i}</li>)}</ul>
+-              </section>
++              <Reveal key={s.id} y={16}>
++                <section id={s.id} className="rounded-xl border bg-background p-6 transition-all hover:-translate-y-0.5 hover:shadow-md">
++                  <Icons.arrowRightCircle className="h-6 w-6 text-emerald-600" />
++                  <h3 className="mt-3 text-lg font-semibold">{s.title}</h3>
++                  <ul className="mt-2 ml-4 list-disc text-sm text-muted-foreground">{s.list.map((i) => <li key={i}>{i}</li>)}</ul>
++                </section>
++              </Reveal>
+             ))}
+           </div>
+         </div>
+@@ -33,3 +36,4 @@
+     </section>
+   )
+ }
++
+--- a/components/site/service-card.tsx
++++ b/components/site/service-card.tsx
+@@ -13,14 +13,12 @@
+   description: string
+ }
+ 
+-export const ServiceCard = ({ href, title, description, Icon }: ServiceCardProps) => {
++export const ServiceCard = ({ href, title, description, Icon }: ServiceCardProps) => {
+   return (
+     <Link
+       href={href}
+       className="group block rounded-xl border bg-background p-6 transition-all hover:-translate-y-0.5 hover:shadow-md"
+     >
+-      {/* @ts-expect-error */}
+       <Icon className="h-6 w-6 text-emerald-600 transition-transform group-hover:scale-110" />
+       <h3 className="mt-3 text-lg font-semibold">{title}</h3>
+       <p className="mt-2 text-sm text-muted-foreground">{description}</p>
+@@ -33,3 +31,4 @@
+     </Link>
+   )
+ }
++
+--- a/components/site/testimonials.tsx
++++ b/components/site/testimonials.tsx
+@@ -1,4 +1,5 @@
+ import { testimonials } from "@/config/site"
++import Reveal from "./reveal"
+ 
+ export default function Testimonials() {
+   return (
+@@ -10,14 +11,16 @@
+         <h2 className="text-3xl font-bold tracking-tight">What Our Clients Say</h2>
+         <p className="max-w-[85%] sm:max-w-xl mx-auto text-muted-foreground">Real stories from real people. See how KingRevenuePro has transformed medical billing and revenue cycle management for practices like yours.</p>
+ 
+-        <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+-          {testimonials.map((t) => (
+-            // @ts-expect-error
+-            <figure key={t.name} className="rounded-xl border bg-background p-6 transition-all hover:-translate-y-0.5 hover:shadow-md">
+-              <blockquote className="text-lg">{t.quote}</blockquote>
+-              <figcaption className="mt-4">
+-                <div className="font-medium">{t.name}</div>
+-                <div className="text-muted-foreground">{t.title}</div>
+-              </figcaption>
+-            </figure>
+-          ))}
+-        </div>
++        <Reveal>
++          <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
++            {testimonials.map((t) => (
++              // @ts-expect-error
++              <figure key={t.name} className="rounded-xl border bg-background p-6 transition-all hover:-translate-y-0.5 hover:shadow-md">
++                <blockquote className="text-lg">{t.quote}</blockquote>
++                <figcaption className="mt-4">
++                  <div className="font-medium">{t.name}</div>
++                  <div className="text-muted-foreground">{t.title}</div>
++                </figcaption>
++              </figure>
++            ))}
++          </div>
++        </Reveal>
+       </div>
+     </section>
+   )
+}
++
+--- a/components/site/pricing-tiers.tsx
++++ b/components/site/pricing-tiers.tsx
+@@ -20,11 +20,9 @@
+         <h2 className="text-3xl font-bold tracking-tight">Simple, Transparent Pricing</h2>
+         <p className="max-w-[85%] sm:max-w-xl mx-auto text-muted-foreground">No hidden fees, no surprises. Just straightforward pricing to help you maximize your revenue.</p>
+ 
+-        <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
++        <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3 ">
+           {tiers.map((t) => (
+-            // @ts-expect-error
+-            <div
+-              key={t.name}
++            <div key={t.name}
+               className={`rounded-xl border bg-background p-6 flex flex-col transition-all hover:-translate-y-0.5 hover:shadow-md ${
+                 t.highlight ? "ring-2 ring-sky-600 shadow-sm" : ""
+               }`}
+@@ -47,3 +45,4 @@
+     </section>
+   )
+ }
++
+--- a/components/site/blog-list.tsx
++++ b/components/site/blog-list.tsx
+@@ -1,5 +1,6 @@
+ import { allPosts } from "contentlayer/generated"
+ import Link from "next/link"
++import Reveal from "@/components/site/reveal"
+ 
+ export default function BlogList() {
+   const posts = allPosts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+@@ -10,11 +11,13 @@
+       <div className="container px-4 md:px-6">
+         <h2 className="text-3xl font-bold tracking-tight">Latest Articles</h2>
+ 
+-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
++        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 ">
+           {posts.map((p) => (
+-            // @ts-expect-error
+-            <article className="rounded-xl border bg-background overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-md">
+-              <Link href={`/blog/${p.slug}`} className="block aspect-video overflow-hidden">
++            <Reveal key={p.slug} y={14}>
++              <article className="rounded-xl border bg-background overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-md">
++                <Link
++                  href={`/blog/${p.slug}`}
++                  className="block aspect-video overflow-hidden"
+                 >
+                   <img
+                     src={p.image || "/placeholder.svg"}
+@@ -27,10 +30,11 @@
+                   <h3 className="mt-3 text-lg font-semibold">{p.title}</h3>
+                   <p className="mt-2 text-sm text-muted-foreground">{p.description}</p>
+                 </div>
+-              </Link>
+-            </article>
++                </Link>
++              </article>
++            </Reveal>
+           ))}
+-        </div>
++        </div> 
+       </div>
+     </section>
+   )
+}
++
+--- a/app/(site)/blog/BlogPageClient.tsx
++++ b/app/(site)/blog/BlogPageClient.tsx
+@@ -29,9 +29,9 @@
+           {categories.map((c) => (
+             <button
+               key={c}
+-              className={`inline-flex items-center rounded-full border px-4 py-1.5 text-sm ${
+-                active === c ? "bg-sky-600 text-white border-sky-600" : "bg-background hover:bg-muted"
+-              }`}
++              className={`inline-flex items-center rounded-full border px-4 py-1.5 text-sm transition-all hover:-translate-y-0.5 ${
++                active === c ? "bg-sky-600 text-white border-sky-600" : "bg-background hover:bg-muted"
++              }`} 
+               onClick={() => setActive(c)}
+             >
+               {c}
+@@ -41,3 +41,4 @@
+     </div>
+   )
+ }
++
+--- a/components/site/header.tsx
++++ b/components/site/header.tsx
+@@ -59,7 +59,7 @@
+   return (
+     <header className="border-b">
+       <div className="container flex h-16 items-center">
+-        <Link href="/" className="mr-4 flex items-center font-semibold">
++        <Link href="/" className="mr-4 flex items-center font-semibold ">
+           <Icons.logo className="mr-2 h-6 w-6" />
+           {siteConfig.name}
+         </Link>
+@@ -70,9 +70,9 @@
+               return (
+                 <Link
+                   key={item.href}
+-                  href={item.href}
++                  href={item.href} 
+                   // @ts-expect-error
+-                  className={`px-3 py-2 text-sm rounded-md ${
++                  className={`px-3 py-2 text-sm rounded-md transition-colors hover:text-sky-700 hover:bg-accent ${
+                     pathname === item.href ? "text-sky-700" : "text-muted-foreground"
+                   }`}
+                 >
+@@ -103,7 +103,7 @@
+                       <DropdownMenuSeparator />
+                       {item.items?.map((c) => (
+                         <DropdownMenuItem key={c.href} asChild>
+-                          <Link href={c.href} className="grid rounded-md p-4 text-sm">
++                          <Link href={c.href} className="group grid rounded-md p-4 text-sm transition-colors hover:bg-accent">
+                             <span className="flex items-center">
+                               {c.icon && (
+                                 // @ts-expect-error
+@@ -111,7 +111,7 @@
+                                     // @ts-expect-error
+                                     : null}
+                                 )}
+-                              {c.label}
++                              {c.label} 
+                             </span>
+                             <p className="line-clamp-2 text-sm text-muted-foreground">{c.description}</p>
+                           </Link>
+@@ -128,3 +128,4 @@
+     </header>
+   )
+ }
++
